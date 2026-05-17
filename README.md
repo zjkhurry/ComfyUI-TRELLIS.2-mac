@@ -16,7 +16,7 @@ ComfyUI custom nodes for TRELLIS.2 image-to-3D generation, running natively on A
 ### 1. Copy to ComfyUI
 ```bash
 git clone https://github.com/zjkhurry/ComfyUI-TRELLIS.2-mac.git
-mv -R ComfyUI-TRELLIS.2-mac /path/to/ComfyUI/custom_nodes/
+mv ComfyUI-TRELLIS.2-mac /path/to/ComfyUI/custom_nodes/
 ```
 
 ### 2. Run Setup
