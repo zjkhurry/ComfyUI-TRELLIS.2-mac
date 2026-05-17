@@ -133,12 +133,10 @@ class Trellis2ShapeNode:
 
         out_mesh = pipeline.run(
             image=pil_image,
-            num_samples=1,
             seed=seed,
             sparse_structure_sampler_params={"steps": steps},
             shape_slat_sampler_params={"steps": steps},
             tex_slat_sampler_params={"steps": steps},
-            preprocess_image=False,
             pipeline_type=pipeline_type,
         )
 
