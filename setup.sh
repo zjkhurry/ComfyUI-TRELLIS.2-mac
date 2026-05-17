@@ -93,6 +93,3 @@ python3 patches/mps_compat.py
 echo
 echo "=== Setup complete ==="
 echo "Restart ComfyUI to load the TRELLIS.2 nodes."
-echo
-echo "Download model weights:"
-echo "  huggingface-cli download microsoft/TRELLIS.2-4B --local-dir models/TRELLIS.2-4B"

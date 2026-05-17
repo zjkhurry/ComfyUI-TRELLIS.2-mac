@@ -58,15 +58,18 @@ This ensures compatibility with operations not natively supported on MPS.
   - `texture_size`: PBR texture resolution (512, 1024, 2048)
   - `no_texture`: Skip texture baking (export geometry only)
   - `rembg`: Remove background before generation
-- **Output**: GLB file will save to `output/` directory`
+- **Output**: `glb_path` GLB file will save to `output/` directory
 
 ### Workflow
 1. Use ComfyUI's built-in image loader
 2. Connect to "TRELLIS2Shape" node
 3. Set `model_path` parameter (default: microsoft/TRELLIS.2-4B)
 4. Configure other parameters
-5. Run generation
-6. Check `output/` directory for generated GLB files
+5. Connect output to 3D previewer
+6. Run generation
+7. Check `output/` directory for generated GLB files
+  
+The example workflow is `Trellis2Example_workflow.json`
 
 ## Requirements
 

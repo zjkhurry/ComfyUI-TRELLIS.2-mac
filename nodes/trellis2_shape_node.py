@@ -10,7 +10,8 @@ import torch
 import numpy as np
 from PIL import Image
 from dataclasses import dataclass
-from comfy_api.latest import Types
+import trimesh
+from pathlib import Path
 
 # Add the TRELLIS.2 path
 PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +31,22 @@ try:
     from trellis2.pipelines.trellis2_image_to_3d import Trellis2ImageTo3DPipeline
 except ImportError as e:
     raise ImportError(f"Failed to import TRELLIS.2 pipeline: {e}")
+
+filename_prefix = "trellis2"
+
+
+def _next_output_path(prefix: str, extension: str = ".glb") -> Path:
+    base_dir = Path(_get_output_path())
+    stem = (
+        "".join(c if c.isalnum() or c in {"_", "-"} else "_" for c in prefix).strip("_")
+        or "hy3d"
+    )
+    candidate = base_dir / f"{stem}{extension}"
+    index = 1
+    while candidate.exists():
+        candidate = base_dir / f"{stem}_{index}{extension}"
+        index += 1
+    return candidate
 
 
 def _pick_device() -> str:
@@ -135,12 +152,14 @@ class Trellis2ShapeNode:
         print(f"\nMesh: {verts.shape[0]:,} vertices, {faces.shape[0]:,} triangles")
 
         if no_texture:
-            import trimesh
 
             tm = trimesh.Trimesh(vertices=verts, faces=faces)
-            glb_path = os.path.join(_get_output_path(), f"trellis2_{seed}.glb")
+            glb_path = _next_output_path(filename_prefix, extension=".glb")
+            glb_path.parent.mkdir(parents=True, exist_ok=True)
             tm.export(glb_path)
-            return (glb_path,)  # 👈 返回路径
+            mesh = trimesh.load(glb_path, force="mesh")
+            mesh.export(glb_path)
+            return (str(glb_path),)
 
         # Apply texture baking
 
@@ -239,11 +258,12 @@ class Trellis2ShapeNode:
                     texture_size=texture_size,
                     verbose=True,
                 )
-                glb_path = os.path.join(
-                    _get_output_path(), f"trellis2_metal_{seed}.glb"
-                )
+                glb_path = _next_output_path(filename_prefix, extension=".glb")
+                glb_path.parent.mkdir(parents=True, exist_ok=True)
                 glb.export(glb_path)
-                return (glb_path,)
+                mesh = trimesh.load(glb_path, force="mesh")
+                mesh.export(glb_path)
+                return (str(glb_path),)
             except RuntimeError as e:
                 print(f"\n  Metal bake failed: {e}")
                 print(f"  Falling back to KDTree texture baker...")
@@ -294,8 +314,12 @@ class Trellis2ShapeNode:
                 texture_size=texture_size,
             )
 
-            glb_path = os.path.join(_get_output_path(), f"trellis2_{seed}.glb")
+            glb_path = _next_output_path(filename_prefix, extension=".glb")
+            glb_path.parent.mkdir(parents=True, exist_ok=True)
             export_glb_with_texture(
                 new_verts, new_faces, uvs, base_color_img, mr_img, glb_path
             )
-        return (glb_path,)  # 👈 返回路径
+            mesh = trimesh.load(glb_path, force="mesh")
+
+            mesh.export(glb_path)
+        return (str(glb_path),)
